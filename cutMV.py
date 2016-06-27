@@ -13,8 +13,8 @@ while cap.isOpened():
     if ret == False:
         break
     cv2.imshow('frame', frame)
-    if count % 100 == 0:
-        writefilename = filename + str(count / 100) + '.png'
+    if count % 10 == 0:
+        writefilename = filename + str(count / 10) + '.png'
         cv2.imwrite(writefilename, frame)
 
     count = count + 1
