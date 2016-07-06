@@ -4,6 +4,7 @@ import cv2
 import math
 import numpy as np
 import os
+import csv
 
 if __name__ == '__main__':
 
@@ -24,9 +25,11 @@ if __name__ == '__main__':
         # フレーム取得
         ret, frame = cap.read()
 
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
         sorceImg3 = sorceImg2
         sorceImg2 = sorceImg1
-        sorceImg1 = frame
+        sorceImg1 = gray
 
         # 最初の3フレームを格納するため
         if sorceImg3 is None:
@@ -66,11 +69,20 @@ if __name__ == '__main__':
             '''
 
             #表示
-            cv2.imshow("FRAMES", maskImg)
+            cv2.imshow("FRAMES", resultImg)
 
         # qで終了
         k = cv2.waitKey(1)
         if k == ord('q'):
+            print(cv2.connectedComponents(resultImg))
+
+            # csvでラベリング結果を保存する
+            with open('./labeling.csv', 'w') as f:
+                # 改行コードの指定
+                writer = csv.writer(f, lineterminator = '\n')
+                # 2次元配列も書き込める
+                writer.writerows(cv2.connectedComponents(resultImg)[1])
+
             break
 
     cap.release()
