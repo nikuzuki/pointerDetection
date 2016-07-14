@@ -10,10 +10,11 @@ if __name__ == '__main__':
 
     # 動画読み込み
     cap = cv2.VideoCapture('./materials/MAH00320.MP4')
-
+    '''
     width = cap.get(3)
     height = cap.get(4)
     print(height, width)
+    '''
 
     # カメラから読み込む
     # cap = cv2.VideoCapture(0)
@@ -24,6 +25,13 @@ if __name__ == '__main__':
     sorceImg2 = None
     # 時刻t+2のフレーム画像
     sorceImg3 = None
+
+    # ログ用csv
+    logFile = open('./log.csv','w')
+    logWriter = csv.writer(logFile, lineterminator = '\n')
+    frameNum = 0
+    listData = []   # listの初期化
+    poiIndex = 0
 
     while 1:
         # フレーム取得
@@ -70,12 +78,38 @@ if __name__ == '__main__':
 
             labelingResults = cv2.connectedComponentsWithStats(grayResultImg, 8, cv2.CV_8U)
 
+            arraySize = len(labelingResults[2])
+
+
+            for i in range(arraySize):
+                if labelingResults[2][i][4] >= 100 and labelingResults[2][i][4] <= 500:
+                    print (labelingResults[2][i][4])
+                    poiIndex = i
+                    break
+
             '''
             cv2.imwrite("./makedata/diffImg1_2.png", diffImg1_2)
             cv2.imwrite("./makedata/diffImg2_3.png", diffImg2_3)
             '''
 
-            # for i in range()
+
+            # log書き込み
+            listData.append(frameNum)
+            frameNum += 1
+            logX = int(labelingResults[3][poiIndex][0]) # 中心座標x
+            listData.append(logX)
+            print("logX", logX)
+
+            logY = int(labelingResults[3][poiIndex][1])
+            listData.append(logY)  #中心座標y
+            leftUpX = labelingResults[2][poiIndex][0]
+            listData.append(leftUpX)    # 左上x
+            leftUpY = labelingResults[2][poiIndex][1]
+            listData.append(leftUpY)    # 左上y
+
+            logWriter.writerow(listData)
+
+            del listData[:]
 
             #表示
             cv2.imshow("FRAMES", grayResultImg)
@@ -84,6 +118,8 @@ if __name__ == '__main__':
         k = cv2.waitKey(1)
         if k == ord('q'):
             # print(cv2.connectedComponents(resultImg))
+
+            logFile.close()
 
             # csvでラベリング結果を保存する
             with open('./labeling.csv', 'w') as f:
@@ -96,10 +132,10 @@ if __name__ == '__main__':
 
                 # ラベリング処理(詳細版): 8点見るか4点見るかの8
                 labelingResults = cv2.connectedComponentsWithStats(grayResultImg, 8, cv2.CV_8U)
-                # print(labelingResults[0] - 1)
-                # print(labelingResults[1])
-                # print(labelingResults[2])
-                # print(labelingResults[3])
+                print(labelingResults[0] - 1)
+                print(labelingResults[1])
+                print(labelingResults[2])
+                print(labelingResults[3])
 
 
             break
