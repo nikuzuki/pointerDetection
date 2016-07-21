@@ -24,6 +24,10 @@ if __name__ == '__main__':
     studyX = 35
     studyY = 35
 
+    # 整数サイズに
+    studyX = int(studyX / 2)
+    studyY = int(studyY / 2)
+
     # logヘッダー用
     logHeader = 0
 
@@ -128,7 +132,7 @@ if __name__ == '__main__':
             if poiIndex != 0:
                 logWriter.writerow(listData)
                 writefilename = filename + str(frameNum) + '.png'
-                dst = resultImg[leftUpY:leftUpY + studyY, leftUpX:leftUpX + studyX]
+                dst = resultImg[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
                 cv2.imwrite(writefilename, dst)
 
             del listData[:]
