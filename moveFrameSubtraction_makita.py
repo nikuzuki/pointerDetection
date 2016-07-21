@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # cap = cv2.VideoCapture(0)
 
     # 学習用画像のサイズ
-    studyX = 25
-    studyY = 25
+    studyX = 35
+    studyY = 35
 
     # logヘッダー用
     logHeader = 0
@@ -41,6 +41,9 @@ if __name__ == '__main__':
     header = []     # header用
     listData = []   # listの初期化
     poiIndex = 0
+
+    # 学習用画像の名前
+    filename = "./studyMaterial/image"
 
     while 1:
         # フレーム取得
@@ -91,7 +94,7 @@ if __name__ == '__main__':
 
             # ポインタくらいの大きさのインデックスを探す
             arraySize = len(labelingResults[2])
-
+            # ポインタくらいの大きさがあれば1, それ以外は0を返す
             for i in range(arraySize):
                 if labelingResults[2][i][4] >= 100 and labelingResults[2][i][4] <= 500:
                     print (labelingResults[2][i][4])
@@ -104,16 +107,17 @@ if __name__ == '__main__':
             # cv2.imwrite("./makedata/diffImg1_2.png", diffImg1_2)
             # cv2.imwrite("./makedata/diffImg2_3.png", diffImg2_3)
 
-
-
             # log書き込み
             listData.append(frameNum)
             frameNum += 1
-
-            listData.append(int(labelingResults[3][poiIndex][0]))  #中心座標x
-            listData.append(int(labelingResults[3][poiIndex][1]))  #中心座標y
-            listData.append(labelingResults[2][poiIndex][0])    # 左上x
-            listData.append(labelingResults[2][poiIndex][1])    # 左上y
+            leftUpX = labelingResults[2][poiIndex][0]
+            leftUpY = labelingResults[2][poiIndex][1]
+            middleX = int(labelingResults[3][poiIndex][0])
+            middleY = int(labelingResults[3][poiIndex][1])
+            listData.append(middleX)  #中心座標x
+            listData.append(middleY)  #中心座標y
+            listData.append(leftUpX)    # 左上x
+            listData.append(leftUpY)    # 左上y
 
             if logHeader == 0:
                 logHeader = 1
@@ -123,8 +127,13 @@ if __name__ == '__main__':
 
             if poiIndex != 0:
                 logWriter.writerow(listData)
+                writefilename = filename + str(frameNum) + '.png'
+                dst = resultImg[leftUpY:leftUpY + studyY, leftUpX:leftUpX + studyX]
+                cv2.imwrite(writefilename, dst)
 
             del listData[:]
+            leftUpX = 0
+            leftUpY = 0
 
             #表示
             cv2.imshow("FRAMES", resultImg)
