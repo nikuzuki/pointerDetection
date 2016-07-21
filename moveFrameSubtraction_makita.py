@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# anaconda3-2.5.0
 
 import cv2
 import math
@@ -19,6 +20,13 @@ if __name__ == '__main__':
     # カメラから読み込む
     # cap = cv2.VideoCapture(0)
 
+    # 学習用画像のサイズ
+    studyX = 25
+    studyY = 25
+
+    # logヘッダー用
+    logHeader = 0
+
     # 時刻tのフレーム画像
     sorceImg1 = None
     # 時刻t+1のフレーム画像
@@ -30,6 +38,7 @@ if __name__ == '__main__':
     logFile = open('./log.csv','w')
     logWriter = csv.writer(logFile, lineterminator = '\n')
     frameNum = 0
+    header = []     # header用
     listData = []   # listの初期化
     poiIndex = 0
 
@@ -74,45 +83,51 @@ if __name__ == '__main__':
 
             # マスクをかける
             resultImg = cv2.bitwise_and(sorceImg2, maskImg)
+
+            # グレースケール化
             grayResultImg = cv2.cvtColor(resultImg, cv2.COLOR_BGR2GRAY)
 
             labelingResults = cv2.connectedComponentsWithStats(grayResultImg, 8, cv2.CV_8U)
 
+            # ポインタくらいの大きさのインデックスを探す
             arraySize = len(labelingResults[2])
-
 
             for i in range(arraySize):
                 if labelingResults[2][i][4] >= 100 and labelingResults[2][i][4] <= 500:
                     print (labelingResults[2][i][4])
                     poiIndex = i
                     break
+                else:
+                    poiIndex = 0
 
-            '''
-            cv2.imwrite("./makedata/diffImg1_2.png", diffImg1_2)
-            cv2.imwrite("./makedata/diffImg2_3.png", diffImg2_3)
-            '''
+
+            # cv2.imwrite("./makedata/diffImg1_2.png", diffImg1_2)
+            # cv2.imwrite("./makedata/diffImg2_3.png", diffImg2_3)
+
 
 
             # log書き込み
             listData.append(frameNum)
             frameNum += 1
-            logX = int(labelingResults[3][poiIndex][0]) # 中心座標x
-            listData.append(logX)
-            print("logX", logX)
 
-            logY = int(labelingResults[3][poiIndex][1])
-            listData.append(logY)  #中心座標y
-            leftUpX = labelingResults[2][poiIndex][0]
-            listData.append(leftUpX)    # 左上x
-            leftUpY = labelingResults[2][poiIndex][1]
-            listData.append(leftUpY)    # 左上y
+            listData.append(int(labelingResults[3][poiIndex][0]))  #中心座標x
+            listData.append(int(labelingResults[3][poiIndex][1]))  #中心座標y
+            listData.append(labelingResults[2][poiIndex][0])    # 左上x
+            listData.append(labelingResults[2][poiIndex][1])    # 左上y
 
-            logWriter.writerow(listData)
+            if logHeader == 0:
+                logHeader = 1
+                print("head")
+                header.append("フレーム数,中心座標X,中心座標Y,左上x,左上y")
+                logWriter.writerow(header)
+
+            if poiIndex != 0:
+                logWriter.writerow(listData)
 
             del listData[:]
 
             #表示
-            cv2.imshow("FRAMES", grayResultImg)
+            cv2.imshow("FRAMES", resultImg)
 
         # qで終了
         k = cv2.waitKey(1)
