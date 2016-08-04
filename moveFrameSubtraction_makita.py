@@ -10,7 +10,7 @@ import csv
 if __name__ == '__main__':
 
     # 動画読み込み
-    cap = cv2.VideoCapture('./materials/MAH00320.MP4')
+    cap = cv2.VideoCapture('./materials/MAH00331.MP4')
     '''
     width = cap.get(3)
     height = cap.get(4)
@@ -134,6 +134,8 @@ if __name__ == '__main__':
                 writefilename = filename + str(frameNum) + '.png'
                 dst = resultImg[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
                 cv2.imwrite(writefilename, dst)
+                img = cv2.imread(writefilename)
+                # cv2.imshow("makeImg", img) # なぜか動かない
 
             del listData[:]
             leftUpX = 0
