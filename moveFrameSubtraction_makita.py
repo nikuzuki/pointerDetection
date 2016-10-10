@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # cap = cv2.VideoCapture(0)
 
     # 学習用画像のサイズ
-    studyX = 35
-    studyY = 35
+    studyX = 30
+    studyY = 30
 
     # 整数サイズに
     studyX = int(studyX / 2)
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     logFile = open('./log.csv','w')
     logWriter = csv.writer(logFile, lineterminator = '\n')
     frameNum = 0
+    noizFrameNum = 0
     header = []     # header用
     listData = []   # listの初期化
     poiIndex = 0
@@ -113,7 +114,6 @@ if __name__ == '__main__':
 
             # log書き込み
             listData.append(frameNum)
-            frameNum += 1
             leftUpX = labelingResults[2][poiIndex][0]
             leftUpY = labelingResults[2][poiIndex][1]
             middleX = int(labelingResults[3][poiIndex][0])
@@ -129,17 +129,26 @@ if __name__ == '__main__':
                 header.append("フレーム数,中心座標X,中心座標Y,左上x,左上y")
                 logWriter.writerow(header)
 
+            # 学習用画像生成
             if poiIndex != 0:
-                logWriter.writerow(listData)
-                writefilename = filename + str(frameNum) + '.png'
-                dst = resultImg[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
-                cv2.imwrite(writefilename, dst)
-                img = cv2.imread(writefilename)
-                # cv2.imshow("makeImg", img) # なぜか動かない
+                if noizFrameNum > 4:    # 端部から認識する場合、ノイズになりうる
+                    logWriter.writerow(listData)    # log.csvへの書き込みを行う
+                    writefilename = filename + str(frameNum) + '.png'
+                    #dst = resultImg[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
+                    dst = sorceImg2[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
+                    cv2.imwrite(writefilename, dst)
+                    img = cv2.imread(writefilename)
+                    # cv2.imshow("makeImg", img) # なぜか動かない
+
+                else:
+                    noizFrameNum += 1
 
             del listData[:]
             leftUpX = 0
             leftUpY = 0
+            middleX = 0
+            middleY = 0
+            frameNum += 1
 
             #表示
             cv2.imshow("FRAMES", resultImg)
