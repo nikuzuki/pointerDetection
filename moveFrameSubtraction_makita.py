@@ -10,7 +10,7 @@ import csv
 if __name__ == '__main__':
 
     # 動画読み込み
-    cap = cv2.VideoCapture('./materials/MAH00331.MP4')
+    cap = cv2.VideoCapture('./materials/MAH00330.MP4')
     '''
     width = cap.get(3)
     height = cap.get(4)
@@ -21,8 +21,13 @@ if __name__ == '__main__':
     # cap = cv2.VideoCapture(0)
 
     # 学習用画像のサイズ
-    studyX = 30
-    studyY = 30
+    studyX = 13
+    studyY = 13
+
+    if studyX % 2 == 1:
+        oddFlag = True
+    else:
+        oddFlag = False
 
     # 整数サイズに
     studyX = int(studyX / 2)
@@ -101,7 +106,7 @@ if __name__ == '__main__':
             arraySize = len(labelingResults[2])
             # ポインタくらいの大きさがあれば1, それ以外は0を返す
             for i in range(arraySize):
-                if labelingResults[2][i][4] >= 100 and labelingResults[2][i][4] <= 500:
+                if labelingResults[2][i][4] >= 200 and labelingResults[2][i][4] <= 600:
                     print (labelingResults[2][i][4])
                     poiIndex = i
                     break
@@ -135,7 +140,10 @@ if __name__ == '__main__':
                     logWriter.writerow(listData)    # log.csvへの書き込みを行う
                     writefilename = filename + str(frameNum) + '.png'
                     #dst = resultImg[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
-                    dst = sorceImg2[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
+                    if oddFlag:
+                        dst = sorceImg2[middleY-studyY:middleY+studyY+1, middleX-studyX:middleX+studyX+1]
+                    else:
+                        dst = sorceImg2[middleY-studyY:middleY+studyY, middleX-studyX:middleX+studyX]
                     cv2.imwrite(writefilename, dst)
                     img = cv2.imread(writefilename)
                     # cv2.imshow("makeImg", img) # なぜか動かない
@@ -175,7 +183,6 @@ if __name__ == '__main__':
                 print(labelingResults[1])
                 print(labelingResults[2])
                 print(labelingResults[3])
-
 
             break
 
