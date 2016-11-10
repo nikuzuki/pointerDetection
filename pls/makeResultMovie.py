@@ -8,7 +8,8 @@ from numpy.random import *
 
 dataNumArray = []
 imageAddress = "../makedata/test"
-cap = cv2.VideoCapture('./materials/hikaku2.MP4')
+#cap = cv2.VideoCapture('./materials/hikaku2.MP4')
+#cap = cv2.imread('../sunTest/test107.png')
 
 # RGB -> HSV変換関数--------------------------
 def RGB2HSV(img):
@@ -35,14 +36,14 @@ def RGB2YCrCb(img):
     return(y, cr, cb)
 
 # ランダムな画像を取得, 最大値の場所を探す
-while(cap.isOpened()):
+#while(cap.isOpened()):
+for i in range(1):
     # フレーム読み込み
-    ret, frame = cap.read()
-    if ret == True:
-        
+    #ret, frame = cap.read()
+    #if ret == True:
 
     # 画像取得
-    img = cv2.imread(imageName, 1)
+    img = cv2.imread('../sunTest/test107.png', 1)
     hsvImage = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     ycrcbImage = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
 
@@ -69,6 +70,7 @@ while(cap.isOpened()):
             #print("hsv", h, s, v)
             #print("ycrcb", y, cr, cb)
 
+            '''
             imageArray[i, j] = r * 7.528200e-04 + \
                                g * 1.244851e-04 + \
                                b * -1.428965e-04 + \
@@ -78,6 +80,13 @@ while(cap.isOpened()):
                                y * -7.389134e-04 + \
                               cr * -9.388121e-04 + \
                               cb *  2.879901e-04
+            '''
+            imageArray[i, j] = y * 5.745262e-05 + \
+                               cr * 9.182731e-05 + \
+                               cb * -4.575109e-06
+
+
+
             #print("check", i, j, maxData, imageArray[i, j])
 
             if maxData < imageArray[i, j]:
